@@ -1,7 +1,7 @@
 var serverHelper = exports;
 
 serverHelper.constants = {
-		PORT: 8001,
+		PORT: 80,
 		NOT_FOUND: 0,
 		SERVER_ERROR: 1,
 		TEXT_PLAIN: 2,
