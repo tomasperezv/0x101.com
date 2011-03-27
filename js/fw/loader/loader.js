@@ -1,72 +1,11 @@
-var fileTypeJavascript = function(url) {
+/**
+ * @author <tom@0x101.com>
+ * @class Loader
+ */
+var Loader = function() {
 
-		this.url = url;
-		this.type = "text/javascript";
-		this.elementName = "script";
-
-		/**
-		 * @author <tom@0x101.com>
-		 */
-		this.render = function(callback) {
-				var element = document.createElement(this.elementName);
-				element.type = this.type;
-				element.src = this.url;
-				return element;
-		}
-
-
-}
-
-var fileTypeCss = function(url) {
-
-		this.url = url;
-		this.elementName = "link";
-		this.type = "text/css";
-		this.rel = "stylesheet";
-
-		/**
-		 * @author <tom@0x101.com>
-		 */
-		this.render = function(callback) {
-				var element = document.createElement(this.elementName);
-				element.type = this.type;
-				element.rel = this.rel;
-				element.href = this.url;
-				return element;
-		}
-}
-
-
-var fileTypeFactory = function() { 
-
-		/**
-		 * constants 
-		 */
-		this.JAVASCRIPT = 'js';
-		this.CSS = 'css';
-
-		/**
-		 * @author <tom@0x101.com>
-		 */
-		this.getFileType = function(filename) {
-				switch (filename.split('.').pop().toLowerCase()) {
-						case this.JAVASCRIPT: {
-								return new fileTypeJavascript(filename);
-								break;
-						}
-						case this.CSS: {
-								return new fileTypeCss(filename);
-								break;
-						}
-				}
-		};
-		
-}
-
-var loader = function() {
-
-		this.fileTypeFactory = undefined;
-		this.onLoad = undefined;
+		this.fileTypeFactory = null;
+		this.onLoad = null;
 		this.loadedFiles = 0;
 
 		/**
@@ -74,7 +13,7 @@ var loader = function() {
 		 */
 		this.getFileTypeFactory = function() {
 				if (!this.fileTypeFactory) {
-						this.fileTypeFactory = new fileTypeFactory();
+						this.fileTypeFactory = new FileTypeFactory();
 				}
 				return this.fileTypeFactory;
 		};
@@ -123,7 +62,7 @@ var loader = function() {
 
 				var fileTypeFactory = this.getFileTypeFactory();
 				var fileType = fileTypeFactory.getFileType(url);
-				var element = fileType.render();
+				var element = fileType.create();
 				this.bindCallback(element, callback);
 		
 				// Inject the script in the head

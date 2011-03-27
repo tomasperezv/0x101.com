@@ -18,5 +18,5 @@ var loadDefinition = {
 		}
 }
 
-htmlLoader = new loader();
+var htmlLoader = new Loader();
 htmlLoader.run(loadDefinition);

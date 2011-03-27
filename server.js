@@ -3,28 +3,37 @@ var sys = require("sys"),
 		url = require("url"),
 		path = require("path"),
 		fs = require("fs"),
-		serverHelper = require("./server/serverHelper");
+		ServerHelper = require("./js/server/serverHelper");
 
 http.createServer(function(request, response) {
 		var uri = url.parse(request.url).pathname;
 		var filename = path.join(process.cwd(), uri);
 		path.exists(filename, function(exists) {
 				if(!exists) {
-						serverHelper.writeError(response, serverHelper.constants.NOT_FOUND);
+						ServerHelper.writeError(response, ServerHelper.constants.NOT_FOUND);
 						response.end();
 						return;
 				}
 	
 				fs.readFile(filename, "binary", function(err, file) {
-						if(err) {
-								serverHelper.writeError(response, serverHelper.constants.SERVER_ERROR, err);
-						} else {
-								serverHelper.writeHeader(response, filename);
+						if(err && !ServerHelper.canSolve(err) ) {
+								ServerHelper.writeError(response, ServerHelper.constants.SERVER_ERROR, err);
+						} else if (false && ServerHelper.canSolve(err)) {
+								var newFilename = ServerHelper.solve(filename);
+								sys.puts(newFilename);
+								fs.readFile(newFilename, "binary", function(err, file) {
+										ServerHelper.writeHeader(response, newFilename);
+										response.write(file, "binary");
+								});
+						} else if (ServerHelper.canServe(filename)) {
+								sys.puts(filename);
+								ServerHelper.writeHeader(response, filename);
 								response.write(file, "binary");
 						}
+
 						response.end();
 				});
 		});
-}).listen(serverHelper.constants.PORT);
+}).listen(ServerHelper.constants.PORT);
 
-sys.puts("Server running at " + serverHelper.constants.PORT + " port.");
+sys.puts("Server running at " + ServerHelper.constants.PORT + " port.");
