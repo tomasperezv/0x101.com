@@ -10,7 +10,7 @@ if (typeof exports !== 'undefined') {
 }
 
 this.constants = {
-		PORT: 8000,
+		PORT: 80,
 		NOT_FOUND: 0,
 		SERVER_ERROR: 1,
 		ROOT: '/media/tomasperezv/Dropbox/Ariadna/scripts/javascript/joyentcloud/repo/index.htm'
