@@ -3,10 +3,7 @@ var loadDefinition = {
 				"css/editor.css",
 				"js/ace/ace.js",
 				"js/ace/theme-twilight.js",
-				{
-						url: "js/ace/mode-javascript.js", 
-						callback: function() {}
-				}
+				"js/ace/mode-javascript.js"
 		],
 		onLoad : function() {
 				// Code executed when all the elements are already loaded

@@ -58,6 +58,6 @@ this.solve = function(filename) {
 
 this.canServe = function(filename) {
 		// TODO: implement security policy here.
-		return true;
+		return filename.length > 0;
 }
 

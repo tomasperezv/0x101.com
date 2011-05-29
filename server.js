@@ -26,9 +26,14 @@ http.createServer(function(request, response) {
 										response.write(file, "binary");
 								});
 						} else if (ServerHelper.canServe(filename)) {
-								sys.puts(filename);
-								ServerHelper.writeHeader(response, filename);
-								response.write(file, "binary");
+								try {
+										sys.puts(filename);
+										ServerHelper.writeHeader(response, filename);
+										response.write(file, "binary");
+								} catch (Error) {
+										// TODO: Add a correct error handling
+										response.write('<meta HTTP-EQUIV="REFRESH" content="0; url=index.htm">', "binary");
+								}
 						}
 
 						response.end();

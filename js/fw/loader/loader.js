@@ -59,14 +59,17 @@ var Loader = function() {
 		 * @author <tom@0x101.com>
 		 */
 		this.load = function(url, callback) {
-
-				var fileTypeFactory = this.getFileTypeFactory();
-				var fileType = fileTypeFactory.getFileType(url);
-				var element = fileType.create();
-				this.bindCallback(element, callback);
-		
-				// Inject the script in the head
-				document.getElementsByTagName("head")[0].appendChild(element);
+				try {
+						var fileTypeFactory = this.getFileTypeFactory();
+						var fileType = fileTypeFactory.getFileType(url);
+						var element = fileType.create();
+						this.bindCallback(element, callback);
+				
+						// Inject the script in the head
+						document.getElementsByTagName("head")[0].appendChild(element);
+				} catch (Error) {
+						// The error handling system is not ready yet
+				}
 		};
 
 		/**
