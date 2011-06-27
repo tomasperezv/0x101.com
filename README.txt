@@ -1,3 +1,9 @@
+Description:
+
+	(http://mi.no.de/portfolio === http://0x101.com)
+
+	My personal portfolio, implemented in node.js, hosted in a joyentcloud virtual machine.
+
 TODO: 
 
 - Server
