@@ -31,8 +31,9 @@ http.createServer(function(request, response) {
 										ServerHelper.writeHeader(response, filename);
 										response.write(file, "binary");
 								} catch (Error) {
-										// TODO: Add a correct error handling
-										response.write('<meta HTTP-EQUIV="REFRESH" content="0; url=index.htm">', "binary");
+										sys.puts(filename);
+										ServerHelper.writeHeader(response, 'index.htm');
+										response.write(file, "binary");
 								}
 						}
 
