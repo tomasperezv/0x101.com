@@ -10,6 +10,7 @@ if (typeof exports !== 'undefined') {
 }
 
 this.constants = {
+		DEFAULT_DOCUMENT: 'index.htm',
 		PORT: 80,
 		NOT_FOUND: 0,
 		SERVER_ERROR: 1,

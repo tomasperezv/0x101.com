@@ -7,7 +7,8 @@ var sys = require("sys"),
 
 http.createServer(function(request, response) {
 		var uri = url.parse(request.url).pathname;
-		var filename = path.join(process.cwd(), uri);
+		var filename = path.join(process.cwd(), ServerHelper.constants.DEFAULT_DOCUMENT);
+		sys.puts(filename);
 		path.exists(filename, function(exists) {
 				if(!exists) {
 						ServerHelper.writeError(response, ServerHelper.constants.NOT_FOUND);
