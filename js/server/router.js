@@ -1,6 +1,6 @@
 /**
   * @author <tom@0x101.com>
-  * @class ServerHelper
+  * @class Router
   */
 
 var sys = require('sys'),

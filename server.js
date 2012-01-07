@@ -1,17 +1,14 @@
 var sys = require("sys"),
 	http = require("http"),
-	url = require("url"),
 	path = require("path"),
 	fs = require("fs"),
 	ServerHelper = require("./js/server/server-helper.js");
 
 http.createServer(function(request, response) {
 
-	var uri = url.parse(request.url).pathname;
-	var filename = path.join(process.cwd(), ServerHelper.constants.DEFAULT_DOCUMENT);
-	sys.puts(filename);
+	var fileName = ServerHelper.getFileName(request);
 
-	path.exists(filename, function(exists) {
+	path.exists(fileName, function(exists) {
 
 		if(!exists) {
 			ServerHelper.writeError(response, ServerHelper.constants.NOT_FOUND);
@@ -19,24 +16,26 @@ http.createServer(function(request, response) {
 			return;
 		}
 		
-		fs.readFile(filename, "binary", function(err, file) {
+		fs.readFile(fileName, "binary", function(err, file) {
 	
 			if(err) {
 	
 				ServerHelper.writeError(response, ServerHelper.constants.SERVER_ERROR, err);
 	
-			} else if (ServerHelper.canServe(filename)) {
-	
+			} else if ( ServerHelper.canServe(fileName) ) {
+
 				try {
 
-					sys.puts(filename);
-					ServerHelper.writeHeader(response, filename);
+					console.log('Routing request for ' + fileName);
+
+					ServerHelper.writeHeader(response, fileName);
 
 					response.write(file, "binary");
 
 				} catch (Error) {
 
-					sys.puts(filename);
+					console.log('Error serving ' + fileName);
+
 					ServerHelper.writeHeader(response, ServerHelper.constants.DEFAULT_DOCUMENT);
 
 					response.write(file, "binary");

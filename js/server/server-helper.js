@@ -1,13 +1,17 @@
-var sys = require('sys');
-	FileTypeFactory = require("../fw/loader/file-type-factory.js");
-	FileType = require("../fw/loader/file-type.js");
+/**
+  * @author <tom@0x101.com>
+  * @class ServerHelper
+  */
 
-if (typeof exports !== 'undefined') {
-	var FileTypeFactory = FileTypeFactory.FileTypeFactory;
-	var FileTypeJavascript = FileType.FileTypeJavascript;
-	var FileTypeCSS = FileType.FileTypeCSS; 
-	var FileType = FileType.FileType;
-}
+var sys = require('sys'),
+	fs = require('fs'),
+	url = require("url"),
+	path = require("path"),
+	FileTypeFactory = require("../fw/loader/file-type-factory.js").FileTypeFactory,
+	FileTypeJavascript = require("../fw/loader/file-type.js").FileTypeJavascript,
+	FileTypeCSS = require("../fw/loader/file-type.js").FileTypeCSS,
+	FileType = require("../fw/loader/file-type.js").FileType,
+	Router = require('./router.js');
 
 this.constants = {
 	DEFAULT_DOCUMENT: 'index.htm',
@@ -55,7 +59,49 @@ this.canSolve = function(error) {
 
 this.solve = function(filename) {
 	return this.constants.ROOT;
-}
+};
+
+this.getDomain = function(host) {
+	
+	var domain = null;
+
+	var result = host.match(/[^:0-9]*/);
+
+	if (result.length > 0) {
+		domain = result[0];
+	}
+
+	return domain;
+	
+};
+
+this.getPort = function(host) {
+
+	var port = null;
+	var result = host.match(/:[0-9]*/);
+
+	if (result.length > 0) {
+		port = result[0].replace(/:/, '');
+	}
+
+	return port;
+};
+
+/**
+ * Returns the real path of the file that we want to server, depending on the
+ * domains-conf.json file
+ */
+this.getFileName = function(request) {
+
+	var requestUrl = request.headers['host'];
+
+	var domain = this.getDomain(requestUrl);
+	var port = this.getPort(requestUrl);
+
+	var url = (request.url == '/' ? this.constants.DEFAULT_DOCUMENT : request.url);
+
+	return Router.getFileName(url, domain, port);
+};
 
 this.canServe = function(filename) {
 	// TODO: implement security policy here.

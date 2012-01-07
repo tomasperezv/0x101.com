@@ -1,14 +1,11 @@
-if (typeof exports !== 'undefined') {
-	FileType = require("./file-type.js");
-	var FileTypeJavascript = FileType.FileTypeJavascript;
-	var FileTypeCSS = FileType.FileTypeCSS;
-	var FileType = FileType.FileType;
-}
-
-/**
+ /**
   * @author <tom@0x101.com>
   * @class FileTypeFactory
   */
+var FileTypeJavascript = require("./file-type.js").FileTypeJavascript,
+FileTypeCSS = require("./file-type.js").FileTypeCSS,
+FileType = require("./file-type.js").FileType;
+
 var FileTypeFactory = function() { 
 
 	/**
