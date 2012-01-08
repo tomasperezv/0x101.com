@@ -13,13 +13,11 @@ var sys = require('sys'),
 	FileType = require("../fw/loader/file-type.js").FileType,
 	Router = require('./router.js');
 
-this.constants = {
-	DEFAULT_DOCUMENT: 'index.htm',
-	PORT: 8000,
-	NOT_FOUND: 0,
-	SERVER_ERROR: 1,
-	ROOT: ''
+require.extensions['.json'] = function (m) {
+	m.exports = JSON.parse(fs.readFileSync(m.filename));
 };
+
+this.constants = require("./conf/server.json");
 
 this.writeHeader = function(response, filename) {
 	var fileTypeFactory = new FileTypeFactory();
@@ -43,22 +41,6 @@ this.writeError = function(response, errorCode, err) {
 
 	response.writeHead(errorCode, fileType.getHeader());
 	response.write(content);
-};
-
-this.canSolve = function(error) {
-	canSolve = false;
-	switch(error.errno) {
-		case this.constants.IS_FOLDER: {
-			canSolve = true;
-			break;
-		}
-	}
-	return true;
-	return canSolve;
-};
-
-this.solve = function(filename) {
-	return this.constants.ROOT;
 };
 
 this.getDomain = function(host) {
@@ -106,5 +88,5 @@ this.getFileName = function(request) {
 this.canServe = function(filename) {
 	// TODO: implement security policy here.
 	return filename.length > 0;
-}
+};
 

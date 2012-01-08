@@ -2,7 +2,7 @@ var sys = require("sys"),
 	http = require("http"),
 	path = require("path"),
 	fs = require("fs"),
-	ServerHelper = require("./js/server/server-helper.js");
+	ServerHelper = require("./server/server-helper.js");
 
 http.createServer(function(request, response) {
 
