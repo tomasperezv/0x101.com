@@ -1,8 +1,9 @@
 { 
     "DEFAULT_DOCUMENT": "index.htm",
 	"DEFAULT_SECTION": "portfolio",
-    "PORT": 80,
+    "PORT": 8000,
     "NOT_FOUND": 0,
     "SERVER_ERROR": 1,
+	"FORBIDDEN": 2,
     "ROOT": ""
 }

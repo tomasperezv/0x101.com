@@ -42,6 +42,9 @@ http.createServer(function(request, response) {
 
 				}
 	
+			} else {
+				console.log('Trying to access to forbidden extension.');
+				ServerHelper.writeError(response, ServerHelper.constants.FORBIDDEN);
 			}
 	
 			response.end();

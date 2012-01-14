@@ -18,6 +18,7 @@ require.extensions['.json'] = function (m) {
 };
 
 this.constants = require("./conf/server.json");
+this.allowedExtensions = require("./conf/allowed-extensions.json");
 
 this.writeHeader = function(response, filename) {
 	var fileTypeFactory = new FileTypeFactory();
@@ -26,11 +27,21 @@ this.writeHeader = function(response, filename) {
 };
 
 this.writeError = function(response, errorCode, err) {
+
+	if (typeof err === 'undefined') {
+		err = {};
+	}
+
 	var fileType = new FileType();
 	var content = '';
+
 	switch(errorCode) {
 		case this.constants.NOT_FOUND: {
 			content = "not found";
+			break;
+		}
+		case this.constants.FORBIDDEN: {
+			content = "forbidden";
 			break;
 		}
 		default:
@@ -85,8 +96,16 @@ this.getFileName = function(request) {
 	return Router.getFileName(url, domain, port);
 };
 
+/**
+ * Determine if we can serve the filename, checking whether the extension is included
+ * in the allowed-extensions.json.
+ *
+ * @author tom@0x101.com
+ */
 this.canServe = function(filename) {
-	// TODO: implement security policy here.
-	return filename.length > 0;
+
+	var extension = filename.split('.').pop().toLowerCase()
+
+	return filename.length > 0 && typeof this.allowedExtensions[extension] !== 'undefined';
 };
 
