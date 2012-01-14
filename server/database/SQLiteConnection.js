@@ -3,7 +3,7 @@
  *
  * Object for connecting with a sql lite database.
  *
- * The database is located in the folder '../database/imdb.db'
+ * The database is located in the folder '../database/0x101.db'
  */
 var sqlite = require("sqlite3");
 
@@ -13,7 +13,7 @@ SQLiteConnection = function(config) {
 
 	DataBaseConnection.DataBaseConnection.call(this);
 
-	this.configuration.filename = './database/imdb.db';
+	this.configuration.filename = './database/0x101.db';
 
 	// Connect to the Database
 	this.dsn = new sqlite.Database(this.configuration.filename);
