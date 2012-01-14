@@ -62,7 +62,7 @@ this.getPort = function(host) {
 	var port = null;
 	var result = host.match(/:[0-9]*/);
 
-	if (result.length > 0) {
+	if (result !== null && result.length > 0) {
 		port = result[0].replace(/:/, '');
 	}
 
