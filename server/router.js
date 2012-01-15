@@ -2,21 +2,16 @@
   * @author <tom@0x101.com>
   * @class Router
   */
-
-var sys = require('sys'),
-	path = require("path"),
+var	path = require("path"),
 	fs = require('fs'),
 	ServerCore = require("./server-core.js"),
+	Config = require("./config.js"),
 	Api = require("./api.js");
 
-require.extensions['.json'] = function (m) {
-	m.exports = JSON.parse(fs.readFileSync(m.filename));
-};
-
-this.domainsConfiguration = require("./conf/domains.json");
-this.allowedFolders = require("./conf/allowed-folders.json");
-this.serverConfiguration = require("./conf/server.json");
-this.apiConfiguration = require("./conf/api.json");
+this.domainsConfiguration = Config.get('domains'); 
+this.allowedFolders = Config.get('allowed-folders'); 
+this.serverConfiguration = Config.get('server');
+this.apiConfiguration = Config.get('api');
 
 /**
  * @author tom@0x101.com

@@ -3,22 +3,18 @@
   * @class ServerCore
   */
 
-var sys = require('sys'),
-	fs = require('fs'),
+var fs = require('fs'),
 	url = require("url"),
 	path = require("path"),
 	FileTypeFactory = require("../fw/loader/file-type-factory.js").FileTypeFactory,
 	FileTypeJavascript = require("../fw/loader/file-type.js").FileTypeJavascript,
 	FileTypeCSS = require("../fw/loader/file-type.js").FileTypeCSS,
 	FileType = require("../fw/loader/file-type.js").FileType,
+	Config = require("./config.js"),
 	Router = require('./router.js');
 
-require.extensions['.json'] = function (m) {
-	m.exports = JSON.parse(fs.readFileSync(m.filename));
-};
-
-this.constants = require("./conf/server.json");
-this.allowedExtensions = require("./conf/allowed-extensions.json");
+this.constants = Config.get('server');
+this.allowedExtensions = Config.get('allowed-extensions'); 
 
 this.writeHeader = function(response, filename) {
 	var fileTypeFactory = new FileTypeFactory();
