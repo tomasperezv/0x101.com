@@ -69,7 +69,19 @@ this.getCurrentSection = function(domain) {
 
 this.generateFileName = function(requestUrl, currentSection) {
 	var filename = path.join(process.cwd(), currentSection);
-	return path.join(filename, requestUrl);
+
+	filename = path.join(filename, requestUrl);
+
+	// If the file exists, but it's a directory, then add the default file name to the url
+	try {
+		stats = fs.lstatSync(filename);
+		if ( stats.isDirectory() ) {
+			filename += '/' + this.serverConfiguration.DEFAULT_DOCUMENT;
+		}
+	} catch(e) {
+	}
+
+	return filename;
 };
 
 /**

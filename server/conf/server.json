@@ -1,5 +1,5 @@
 { 
-    "DEFAULT_DOCUMENT": "index.htm",
+    "DEFAULT_DOCUMENT": "index.html",
 	"DEFAULT_SECTION": "portfolio",
     "PORT": 80,
     "NOT_FOUND": 0,
