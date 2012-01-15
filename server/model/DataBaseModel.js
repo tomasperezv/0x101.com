@@ -50,14 +50,15 @@ DataBaseModel.prototype.getData = function() {
  *
  * @param Array filters 
  * @param Function onSuccess
+ * @param Integer maxItems 
  */
-DataBaseModel.prototype.load = function(filters, onSuccess) {
+DataBaseModel.prototype.load = function(filters, onSuccess, maxItems) {
 
 	if (typeof filters === 'undefined') {
 		var filters = {};
 	}
 	
-	this.lastQuery = this.getLoadQuery(filters);
+	this.lastQuery = this.getLoadQuery(filters, maxItems);
 
 	var sqliteConnection = new SQLiteConnection.SQLiteConnection(); 
 
@@ -152,8 +153,9 @@ DataBaseModel.prototype.getInsertQuery = function(data) {
  * Builds a simple SELECT query.
  *
  * @param Object filters 
+ * @param Integer maxItems 
  */
-DataBaseModel.prototype.getLoadQuery = function(filters) {
+DataBaseModel.prototype.getLoadQuery = function(filters, maxItems) {
 
 	var query = 'SELECT * FROM ' + this.table + ' WHERE ';
 
@@ -171,6 +173,10 @@ DataBaseModel.prototype.getLoadQuery = function(filters) {
 
 			query += fieldName + ' = ' + filters[fieldName];	
 		}
+	}
+
+	if (typeof maxItems !== 'undefined') {
+		query += ' LIMIT ' + maxItems;
 	}
 
 	query += ';';

@@ -128,5 +128,11 @@ this.getPort = function(host) {
 	return port;
 };
 
-
+/**
+ * TODO: Improve security
+ * @author tom@0x101.com 
+ */
+this.isAdmin = function(request) {
+	return request.connection.remoteAddress === '127.0.0.1';
+};
 
