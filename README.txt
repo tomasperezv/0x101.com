@@ -1,17 +1,18 @@
 Description:
+	
+	Web application for serving my personal webpage. Implemented in Node.js and hosted in a Joyent Cloud Node Smartmachine.
 
-	http://www.0x101.com
+	The application implement the logic and files for the following hosts:
 
-	My personal portfolio, implemented in node.js, hosted in a joyentcloud virtual machine.
+		http://www.0x101.com 
+		http://www.tomasperez.com
 
-TODO: 
+			My personal portfolio, implemented in node.js, hosted in a joyentcloud virtual machine.
 
-- Server
-	[] Improve the server to be able of handle all kind of requests, and server automatically index.htm files.
-	[] Custom header for css instead of text/plain
+		http://blog.tomasperez.com
+			
+			My blog!
 
-- Client
-	[x] Loader system
-	[x] Support for multiple callback per file instead of just one.
-	[x] Support for a main callback that is executed when all the elements are finally loaded.
-	[ ] Improve the callbacks system for chrome. 
+		http://api.tomasperez.com
+
+			Api webservices used for different applications I'm working on(including the blog).
