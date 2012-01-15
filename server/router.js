@@ -18,6 +18,8 @@ this.apiConfiguration = Config.get('api');
  */
 this.serveRequest = function(request, response) {
 
+	console.log(this.devMode());
+
 	if (this.isApiRequest(request)) {
 
 		console.log('Api request...');
@@ -143,3 +145,6 @@ this.isAdmin = function(request) {
 	return request.connection.remoteAddress === '127.0.0.1';
 };
 
+this.devMode = function(request) {
+	return this.serverConfiguration.DEV;
+};

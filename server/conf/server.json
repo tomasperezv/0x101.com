@@ -1,6 +1,7 @@
 { 
     "DEFAULT_DOCUMENT": "index.html",
 	"DEFAULT_SECTION": "portfolio",
+	"DEV": false,
     "PORT": 80,
     "NOT_FOUND": 0,
     "SERVER_ERROR": 1,
