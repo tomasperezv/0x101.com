@@ -1,6 +1,6 @@
 /**
   * @author <tom@0x101.com>
-  * @class ServerHelper
+  * @class ServerCore
   */
 
 var sys = require('sys'),
@@ -54,46 +54,54 @@ this.writeError = function(response, errorCode, err) {
 	response.write(content);
 };
 
-this.getDomain = function(host) {
+this.serve = function(fileName, response) {
+
+	var ServerCore = this;
+
+	path.exists(fileName, function(exists) {
+
+		if(!exists) {
+			ServerCore.writeError(response, ServerCore.constants.NOT_FOUND);
+			response.end();
+			return;
+		}
+		
+		fs.readFile(fileName, "binary", function(err, file) {
 	
-	var domain = null;
-
-	var result = host.match(/[^:0-9]*/);
-
-	if (result.length > 0) {
-		domain = result[0];
-	}
-
-	return domain;
+			if(err) {
 	
-};
+				ServerCore.writeError(response, ServerCore.constants.SERVER_ERROR, err);
+	
+			} else if ( ServerCore.canServe(fileName) ) {
 
-this.getPort = function(host) {
+				try {
 
-	var port = null;
-	var result = host.match(/:[0-9]*/);
+					console.log('Routing request for ' + fileName);
 
-	if (result !== null && result.length > 0) {
-		port = result[0].replace(/:/, '');
-	}
+					ServerCore.writeHeader(response, fileName);
 
-	return port;
-};
+					response.write(file, "binary");
 
-/**
- * Returns the real path of the file that we want to server, depending on the
- * domains-conf.json file
- */
-this.getFileName = function(request) {
+				} catch (Error) {
 
-	var requestUrl = request.headers['host'];
+					console.log('Error serving ' + fileName);
 
-	var domain = this.getDomain(requestUrl);
-	var port = this.getPort(requestUrl);
+					ServerCore.writeHeader(response, ServerCore.constants.DEFAULT_DOCUMENT);
 
-	var url = (request.url == '/' ? this.constants.DEFAULT_DOCUMENT : request.url);
+					response.write(file, "binary");
 
-	return Router.getFileName(url, domain, port);
+				}
+	
+			} else {
+				console.log('Trying to access to forbidden extension.');
+				ServerCore.writeError(response, ServerCore.constants.FORBIDDEN);
+			}
+	
+			response.end();
+	
+		});
+	});
+
 };
 
 /**

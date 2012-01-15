@@ -2,56 +2,13 @@ var sys = require("sys"),
 	http = require("http"),
 	path = require("path"),
 	fs = require("fs"),
-	ServerHelper = require("./server/server-helper.js");
+	ServerCore = require("./server/server-core.js");
+	Router = require('./server/router.js');
 
 http.createServer(function(request, response) {
 
-	var fileName = ServerHelper.getFileName(request);
+	Router.serveRequest(request, response);	
 
-	path.exists(fileName, function(exists) {
+}).listen(ServerCore.constants.PORT);
 
-		if(!exists) {
-			ServerHelper.writeError(response, ServerHelper.constants.NOT_FOUND);
-			response.end();
-			return;
-		}
-		
-		fs.readFile(fileName, "binary", function(err, file) {
-	
-			if(err) {
-	
-				ServerHelper.writeError(response, ServerHelper.constants.SERVER_ERROR, err);
-	
-			} else if ( ServerHelper.canServe(fileName) ) {
-
-				try {
-
-					console.log('Routing request for ' + fileName);
-
-					ServerHelper.writeHeader(response, fileName);
-
-					response.write(file, "binary");
-
-				} catch (Error) {
-
-					console.log('Error serving ' + fileName);
-
-					ServerHelper.writeHeader(response, ServerHelper.constants.DEFAULT_DOCUMENT);
-
-					response.write(file, "binary");
-
-				}
-	
-			} else {
-				console.log('Trying to access to forbidden extension.');
-				ServerHelper.writeError(response, ServerHelper.constants.FORBIDDEN);
-			}
-	
-			response.end();
-	
-		});
-	});
-
-}).listen(ServerHelper.constants.PORT);
-
-sys.puts("Server running at " + ServerHelper.constants.PORT + " port.");
+sys.puts("Server running at " + ServerCore.constants.PORT + " port.");

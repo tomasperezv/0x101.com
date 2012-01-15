@@ -5,7 +5,9 @@
 
 var sys = require('sys'),
 	path = require("path"),
-	fs = require('fs');
+	fs = require('fs'),
+	ServerCore = require("./server-core.js"),
+	Api = require("./api.js");
 
 require.extensions['.json'] = function (m) {
 	m.exports = JSON.parse(fs.readFileSync(m.filename));
@@ -14,6 +16,29 @@ require.extensions['.json'] = function (m) {
 this.domainsConfiguration = require("./conf/domains.json");
 this.allowedFolders = require("./conf/allowed-folders.json");
 this.serverConfiguration = require("./conf/server.json");
+this.apiConfiguration = require("./conf/api.json");
+
+/**
+ * @author tom@0x101.com
+ */
+this.serveRequest = function(request, response) {
+
+	if (this.isApiRequest(request)) {
+
+		console.log('Api request...');
+		Api.serve(request, response);
+
+	} else {
+
+		var filename = this.getFileName(request);
+		ServerCore.serve(filename, response);
+
+	}
+};
+
+this.isApiRequest = function(request) {
+	return this.getDomain(request) === this.apiConfiguration.domain;
+};
 
 this.getCurrentSection = function(domain) {
 
@@ -47,7 +72,18 @@ this.generateFileName = function(requestUrl, currentSection) {
 	return path.join(filename, requestUrl);
 };
 
-this.getFileName = function(requestUrl, domain, port) {
+/**
+ * Returns the real path of the file that we want to server, depending on the
+ * domains-conf.json file
+ */
+this.getFileName = function(request) {
+
+	var requestUrl = request.headers['host'];
+
+	var domain = this.getDomain(request);
+	var port = this.getPort(requestUrl);
+
+	var url = (request.url == '/' ? ServerCore.constants.DEFAULT_DOCUMENT : request.url);
 
 	var currentSection = this.getCurrentSection(domain);
 
@@ -57,10 +93,40 @@ this.getFileName = function(requestUrl, domain, port) {
 		console.log('Invalid or default section, fixing to ' + currentSection);
 	}
 
-	var filename = this.generateFileName(requestUrl, currentSection);
+	var filename = this.generateFileName(url, currentSection);
 
 	console.log(filename);
 
 	return filename;
 };
+
+this.getDomain = function(request) {
+
+	var requestUrl = request.headers['host'];
+	
+	var domain = null;
+
+	var result = requestUrl.match(/[^:0-9]*/);
+
+	if (result.length > 0) {
+		domain = result[0];
+	}
+
+	return domain;
+	
+};
+
+this.getPort = function(host) {
+
+	var port = null;
+	var result = host.match(/:[0-9]*/);
+
+	if (result !== null && result.length > 0) {
+		port = result[0].replace(/:/, '');
+	}
+
+	return port;
+};
+
+
 
