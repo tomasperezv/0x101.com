@@ -39,7 +39,7 @@ this.serve = function(request, response) {
 			break;
 		
 		default:
-			this.responseCallback({});
+			this.responseCallback({'status': 'active'});
 			// Nothing to do here, move along
 			break
 	}
