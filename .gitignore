@@ -1,4 +1,7 @@
 server-dev.json
 config
 database
+blog
+css
+portfolio
 *.swp
