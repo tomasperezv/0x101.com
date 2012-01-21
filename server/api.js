@@ -58,7 +58,7 @@ this.getPosts = function(callback) {
 	var posts = new Posts();
 	posts.load({}, function(model) {
 		callback(model.data);
-	}, 1);
+	});
 
 };
 
