@@ -40,7 +40,7 @@ this.getFullFileName = function(name, dev) {
 		this.CONFIGURATION_FOLDER + name + '.json';
 };
 
-this.CONFIGURATION_FOLDER = './server/conf/';
+this.CONFIGURATION_FOLDER = './config/';
 
 this.configDomains = [];
 

@@ -32,16 +32,16 @@ this.writeError = function(response, errorCode, err) {
 	var content = '';
 
 	switch(errorCode) {
-		case this.constants.NOT_FOUND: {
+		case this.constants.notFound: {
 			content = "not found";
 			break;
 		}
-		case this.constants.FORBIDDEN: {
+		case this.constants.forbidden: {
 			content = "forbidden";
 			break;
 		}
 		default:
-		case this.constants.SERVER_ERROR: {
+		case this.constants.serverError: {
 			content = err + " " + errorCode  + "\n" + JSON.stringify(err);
 		}
 	}
@@ -57,7 +57,7 @@ this.serve = function(fileName, response) {
 	path.exists(fileName, function(exists) {
 
 		if(!exists) {
-			ServerCore.writeError(response, ServerCore.constants.NOT_FOUND);
+			ServerCore.writeError(response, ServerCore.constants.notFound);
 			response.end();
 			return;
 		}
@@ -66,7 +66,7 @@ this.serve = function(fileName, response) {
 	
 			if(err) {
 	
-				ServerCore.writeError(response, ServerCore.constants.SERVER_ERROR, err);
+				ServerCore.writeError(response, ServerCore.constants.serverError, err);
 	
 			} else if ( ServerCore.canServe(fileName) ) {
 
@@ -82,7 +82,7 @@ this.serve = function(fileName, response) {
 
 					console.log('Error serving ' + fileName);
 
-					ServerCore.writeHeader(response, ServerCore.constants.DEFAULT_DOCUMENT);
+					ServerCore.writeHeader(response, ServerCore.constants.defaultDocument);
 
 					response.write(file, "binary");
 
@@ -90,7 +90,7 @@ this.serve = function(fileName, response) {
 	
 			} else {
 				console.log('Trying to access to forbidden extension.');
-				ServerCore.writeError(response, ServerCore.constants.FORBIDDEN);
+				ServerCore.writeError(response, ServerCore.constants.forbidden);
 			}
 	
 			response.end();

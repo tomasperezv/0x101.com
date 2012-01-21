@@ -18,8 +18,6 @@ this.apiConfiguration = Config.get('api');
  */
 this.serveRequest = function(request, response) {
 
-	console.log(this.devMode());
-
 	if (this.isApiRequest(request)) {
 
 		console.log('Api request...');
@@ -73,7 +71,7 @@ this.generateFileName = function(requestUrl, currentSection) {
 	try {
 		stats = fs.lstatSync(filename);
 		if ( stats.isDirectory() ) {
-			filename += '/' + this.serverConfiguration.DEFAULT_DOCUMENT;
+			filename += '/' + this.serverConfiguration.defaultDocument;
 		}
 	} catch(e) {
 	}
@@ -98,7 +96,7 @@ this.getFileName = function(request) {
 
 	if (currentSection == '' || typeof this.allowedFolders[currentSection] === 'undefined') {
 		// Fix the current section
-		currentSection = this.serverConfiguration.DEFAULT_SECTION;
+		currentSection = this.serverConfiguration.defaultSection;
 		console.log('Invalid or default section, fixing to ' + currentSection);
 	}
 
@@ -146,5 +144,5 @@ this.isAdmin = function(request) {
 };
 
 this.devMode = function(request) {
-	return this.serverConfiguration.DEV;
+	return this.serverConfiguration.dev;
 };
