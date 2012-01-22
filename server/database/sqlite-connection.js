@@ -13,7 +13,7 @@ SQLiteConnection = function(config) {
 
 	DataBaseConnection.DataBaseConnection.call(this);
 
-	this.configuration.filename = './database/0x101.db';
+	this.configuration.filename = './database-setup/0x101.db';
 
 	// Connect to the Database
 	this.dsn = new sqlite.Database(this.configuration.filename);
