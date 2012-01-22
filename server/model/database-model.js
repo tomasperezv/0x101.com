@@ -60,6 +60,8 @@ DataBaseModel.prototype.load = function(filters, onSuccess, maxItems) {
 	
 	this.lastQuery = this.getLoadQuery(filters, maxItems);
 
+	console.log(this.lastQuery);
+
 	var sqliteConnection = new SQLiteConnection.SQLiteConnection(); 
 
 	var model = this;
@@ -70,6 +72,24 @@ DataBaseModel.prototype.load = function(filters, onSuccess, maxItems) {
 	});
 };
 
+/**
+ * @author tom@0x101.com
+ */
+DataBaseModel.prototype.createAndLoad = function(data, onSuccess) {
+
+	var self = this;
+	this.create(data, function(id) {
+
+		self.lastQuery = self.getLoadQuery({id: id}, 1);
+	
+		var sqliteConnection = new SQLiteConnection.SQLiteConnection(); 
+	
+		sqliteConnection.select(self.lastQuery, function(rows) {
+			onSuccess(rows.length > 0 ? rows[0] : {});
+		});
+
+	});
+};
 
 /**
  * Add a new register in the DB:
@@ -155,7 +175,7 @@ DataBaseModel.prototype.getInsertQuery = function(data) {
  * @param Object filters 
  * @param Integer maxItems 
  */
-DataBaseModel.prototype.getLoadQuery = function(filters, maxItems) {
+DataBaseModel.prototype.getLoadQuery = function(filters, maxItems, orderBy) {
 
 	var query = 'SELECT * FROM ' + this.table + ' WHERE ';
 
@@ -166,12 +186,14 @@ DataBaseModel.prototype.getLoadQuery = function(filters, maxItems) {
 		var first = true;
 		
 		for (fieldName in filters) {
+
 			if (!first) {
-				query += 'AND ';
-				first = false;
+				query += ' AND ';
 			}
 
-			query += fieldName + ' = ' + filters[fieldName];	
+			query += fieldName + ' = ' + "'" + filters[fieldName] + "'";	
+
+			first = false;
 		}
 	}
 
@@ -179,9 +201,43 @@ DataBaseModel.prototype.getLoadQuery = function(filters, maxItems) {
 		query += ' LIMIT ' + maxItems;
 	}
 
+	if (typeof orderBy !== 'undefined') {
+		query += 'ORDER BY ' + "'" + orderBy.column + "' " + orderBy.type;
+	}
+
 	query += ';';
 
 	return query;
+};
+
+DataBaseModel.prototype.getRandomString = function() {
+
+	var chars, rand, i, salt, bits;
+  
+	chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-'; 
+	salt = '';
+	bits = 512;
+	
+	// In v8, Math.random() yields 32 pseudo-random bits (in spidermonkey it gives 53)
+	while (bits > 0) {
+		rand = Math.floor(Math.random() * 0x100000000); 
+
+		for (i = 26; i > 0 && bits > 0; i -= 6, bits -= 6) {
+			salt += chars[0x3F & rand >>> i];
+		}
+	}
+	
+	return salt;
+};
+
+DataBaseModel.prototype.getTimestamp = function(date) {
+
+	if (typeof date === 'undefined') {
+		var currentTime = new Date();
+		var date = new Date(currentTime.getFullYear() + '-' + (currentTime.getMonth()+1) + '-' + currentTime.getDate());
+	}   
+
+	return Math.round((new Date(date)).getTime() / 1000);
 };
 
 exports.DataBaseModel = DataBaseModel;
