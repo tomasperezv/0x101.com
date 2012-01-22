@@ -8,15 +8,15 @@
  * 	PRIMARY KEY(id)
  * );
  */
-var DataBaseModel = require('./DataBaseModel');
+var DataBaseModel = require('./database-model');
 
-Posts = function() {
+Post = function() {
 
 	DataBaseModel.DataBaseModel.call(this);
 	this.table = 'posts';
 
 }
 
-Posts.prototype = new DataBaseModel.DataBaseModel(); 
+Post.prototype = new DataBaseModel.DataBaseModel(); 
 
-exports.Posts = Posts;
+exports.Post = Post;

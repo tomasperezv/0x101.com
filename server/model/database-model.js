@@ -14,7 +14,7 @@
  * 	console.log('created blog post: ' + id);
  * })
  */
-var SQLiteConnection = require('../database/SQLiteConnection');
+var SQLiteConnection = require('../database/sqlite-connection');
 
 DataBaseModel = function() {
 

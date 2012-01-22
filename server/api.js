@@ -3,7 +3,7 @@
  * @class Api
  */
 
-var Posts = require('./model/Posts').Posts;
+var Post = require('./model/post').Post;
 var Router = require('./router.js');
 var qs = require('querystring');
 
@@ -55,7 +55,7 @@ this.responseCallback = function(data) {
 
 this.getPosts = function(callback) {
 
-	var posts = new Posts();
+	var posts = new Post();
 	posts.load({}, function(model) {
 		callback(model.data);
 	});
@@ -76,7 +76,7 @@ this.addPost = function(request, callback) {
 		var data = qs.parse(body);
 
 		if (typeof data.content !== 'undefined') {
-			var posts = new Posts();
+			var posts = new Post();
 			posts.create({content: data.content}, function(postId)	{
 				if (typeof callback !== 'undefined') {
 					console.log('created post ' + postId);

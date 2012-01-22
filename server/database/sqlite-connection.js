@@ -7,7 +7,7 @@
  */
 var sqlite = require("sqlite3");
 
-var DataBaseConnection = require('./DataBaseConnection');
+var DataBaseConnection = require('./database-connection');
 
 SQLiteConnection = function(config) {
 

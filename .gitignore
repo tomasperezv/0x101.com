@@ -1,7 +1,7 @@
 server-dev.json
 config
-database
 blog
 css
 portfolio
+database-setup
 *.swp
