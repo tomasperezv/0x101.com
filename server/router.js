@@ -8,10 +8,13 @@ var	path = require("path"),
 	Config = require("./config.js"),
 	Api = require("./api.js");
 
-this.domainsConfiguration = Config.get('domains'); 
-this.allowedFolders = Config.get('allowed-folders'); 
-this.serverConfiguration = Config.get('server');
-this.apiConfiguration = Config.get('api');
+this.config = {
+	domains: Config.get('domains'),
+	allowedFolders: Config.get('allowed-folders'),
+	server: Config.get('server'),
+	api: Config.get('api'),
+	templates: Config.get('templates')
+}
 
 /**
  * @author tom@0x101.com
@@ -26,13 +29,40 @@ this.serveRequest = function(request, response) {
 	} else {
 
 		var filename = this.getFileName(request);
-		ServerCore.serve(filename, response);
 
+		var domain = this.getDomain(request);
+		var currentSection = this.getCurrentSection(domain);
+
+		var templateConfig = this.getTemplateConfig(filename, currentSection);
+
+		if ( templateConfig !== null) {
+			ServerCore.serveTemplate(filename, templateConfig, response);
+		} else {
+			ServerCore.serve(filename, response);
+		}
 	}
 };
 
+this.getTemplateConfig = function(filename, section) {
+	var config = null;
+
+	var templatesConfig = this.config.templates;
+
+	var sectionPath = filename.split('/');
+	sectionPath = sectionPath.length > 2 ? sectionPath[sectionPath.length-2] : '';
+
+	console.log(sectionPath);
+
+	var basename = filename.replace(/^.*[\/\\]/g, '');
+	if (typeof templatesConfig[section] !== 'undefined' && typeof templatesConfig[section][basename] !== 'undefined' && section === sectionPath) {
+		config = templatesConfig[section][basename];
+	}
+
+	return config;
+};
+
 this.isApiRequest = function(request) {
-	return this.getDomain(request) === this.apiConfiguration.domain;
+	return this.getDomain(request) === this.config.api.domain;
 };
 
 this.getCurrentSection = function(domain) {
@@ -43,12 +73,12 @@ this.getCurrentSection = function(domain) {
 	// data structure
 
 	// TODO: Also add support for the path
-	for (var section in this.domainsConfiguration) {
+	for (var section in this.config.domains) {
 
-		var nSubSections = this.domainsConfiguration[section].length;
+		var nSubSections = this.config.domains[section].length;
 
 		for (var i = 0; i < nSubSections; i++) {
-			if (this.domainsConfiguration[section][i].domain == domain) {
+			if (this.config.domains[section][i].domain == domain) {
 				currentSection = section;
 				break;
 			}
@@ -70,8 +100,10 @@ this.generateFileName = function(requestUrl, currentSection) {
 	// If the file exists, but it's a directory, then add the default file name to the url
 	try {
 		stats = fs.lstatSync(filename);
-		if ( stats.isDirectory() ) {
-			filename += '/' + this.serverConfiguration.defaultDocument;
+		if ( stats.isDirectory() || stats.isSymbolicLink() ) {
+			filename += '/' + this.config.server.defaultDocument;
+		} else {
+			console.log('is not a directory' + filename);
 		}
 	} catch(e) {
 	}
@@ -80,7 +112,7 @@ this.generateFileName = function(requestUrl, currentSection) {
 };
 
 /**
- * Returns the real path of the file that we want to server, depending on the
+ * Returns the real path of the file that we want to serve, depending on the
  * domains-conf.json file
  */
 this.getFileName = function(request) {
@@ -94,9 +126,9 @@ this.getFileName = function(request) {
 
 	var currentSection = this.getCurrentSection(domain);
 
-	if (currentSection == '' || typeof this.allowedFolders[currentSection] === 'undefined') {
+	if (currentSection == '' || typeof this.config.allowedFolders[currentSection] === 'undefined') {
 		// Fix the current section
-		currentSection = this.serverConfiguration.defaultSection;
+		currentSection = this.config.server.defaultSection;
 		console.log('Invalid or default section, fixing to ' + currentSection);
 	}
 
@@ -144,5 +176,5 @@ this.isAdmin = function(request) {
 };
 
 this.devMode = function(request) {
-	return this.serverConfiguration.dev;
+	return this.config.server.dev;
 };

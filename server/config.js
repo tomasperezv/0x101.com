@@ -44,7 +44,7 @@ this.CONFIGURATION_FOLDER = './config/';
 
 this.configDomains = [];
 
-this.domains = ['domains', 'allowed-folders', 'server', 'api', 'allowed-extensions'];
+this.domains = ['domains', 'allowed-folders', 'server', 'api', 'allowed-extensions', 'templates'];
 var nDomains = this.domains.length;
 for (var i = 0; i < nDomains; i++) {
 	var currentDomain = this.domains[i];

@@ -11,6 +11,8 @@ var fs = require('fs'),
 	FileTypeCSS = require("../fw/loader/file-type.js").FileTypeCSS,
 	FileType = require("../fw/loader/file-type.js").FileType,
 	Config = require("./config.js"),
+	Handlebars = require('handlebars'),
+	TemplateEngine = require('./template-engine.js'),
 	Router = require('./router.js');
 
 this.constants = Config.get('server');
@@ -20,6 +22,10 @@ this.writeHeader = function(response, filename) {
 	var fileTypeFactory = new FileTypeFactory();
 	var fileType = fileTypeFactory.getFileType(filename); 
 	response.writeHead(fileType.getHTTPCode(), fileType.getHeader());
+};
+
+this.staticDomain = function() {
+	return this.constants.staticDomain + ':' + this.constants.port;
 };
 
 this.writeError = function(response, errorCode, err) {
@@ -48,6 +54,35 @@ this.writeError = function(response, errorCode, err) {
 
 	response.writeHead(errorCode, fileType.getHeader());
 	response.write(content);
+};
+
+this.serveTemplate = function(fileName, config, response) {
+
+	var ServerCore = this;
+
+	var templateName = config['folder'] + config['templates'][0];
+	console.log(templateName);
+
+	fs.readFile(templateName, "binary", function(err, template) {
+		if (err) {
+			console.log('Template not found');
+		} else {
+			console.log('serving template ' + templateName);
+
+			// Get template data
+			var data = TemplateEngine.processData(config);
+
+			ServerCore.writeHeader(response, fileName);
+
+			var template = Handlebars.compile(template);
+			var output = template(data);
+
+			response.write(output, "binary");
+
+			response.end();
+		}
+	});
+
 };
 
 this.serve = function(fileName, response) {

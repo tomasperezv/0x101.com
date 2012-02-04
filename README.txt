@@ -16,3 +16,7 @@ The application implement the logic and files for the following hosts:
 - API webservices used for web applications I'm working on(including the blog).
 
 	http://api.tomasperez.com
+
+
+Installation: run the install.sh in the scripts folder, which will include the dependencies.	
+
