@@ -17,6 +17,7 @@ var fs = require('fs'),
 
 this.constants = Config.get('server');
 this.allowedExtensions = Config.get('allowed-extensions'); 
+this.api = Config.get('api');
 
 this.writeHeader = function(response, filename) {
 	var fileTypeFactory = new FileTypeFactory();
@@ -26,6 +27,10 @@ this.writeHeader = function(response, filename) {
 
 this.staticDomain = function() {
 	return this.constants.staticDomain + ':' + this.constants.port;
+};
+
+this.apiDomain = function() {
+	return this.api.domain + ':' + this.constants.port;
 };
 
 this.writeError = function(response, errorCode, err) {
@@ -124,7 +129,7 @@ this.serve = function(fileName, response) {
 				}
 	
 			} else {
-				console.log('Trying to access to forbidden extension.');
+				console.log('Trying to access to forbidden extension: ' + fileName);
 				ServerCore.writeError(response, ServerCore.constants.forbidden);
 			}
 	

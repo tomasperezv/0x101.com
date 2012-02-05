@@ -51,11 +51,30 @@ this.getTemplateConfig = function(filename, section) {
 	var sectionPath = filename.split('/');
 	sectionPath = sectionPath.length > 2 ? sectionPath[sectionPath.length-2] : '';
 
-	console.log(sectionPath);
-
 	var basename = filename.replace(/^.*[\/\\]/g, '');
-	if (typeof templatesConfig[section] !== 'undefined' && typeof templatesConfig[section][basename] !== 'undefined' && section === sectionPath) {
-		config = templatesConfig[section][basename];
+	config = this.getBaseTemplateConfig(section, sectionPath, basename);
+
+	if (config === null) {
+		// Fallback to check if it's a first level subsection
+		config = this.getBaseTemplateConfig(section, sectionPath, '/' + sectionPath + '/index.html', false);
+	}
+
+	return config;
+};
+
+this.getBaseTemplateConfig = function(section, sectionPath, basename, requireSection) {
+
+	if (typeof requireSection === 'undefined') {
+		var requireSection = true;
+	}
+
+	var templatesConfig = this.config.templates;
+
+	var config = null;
+	if (typeof templatesConfig[section] !== 'undefined' && typeof templatesConfig[section][basename] !== 'undefined') {
+		if ((requireSection && section === sectionPath) || !requireSection) {
+			config = templatesConfig[section][basename];
+		}
 	}
 
 	return config;
@@ -102,8 +121,6 @@ this.generateFileName = function(requestUrl, currentSection) {
 		stats = fs.lstatSync(filename);
 		if ( stats.isDirectory() || stats.isSymbolicLink() ) {
 			filename += '/' + this.config.server.defaultDocument;
-		} else {
-			console.log('is not a directory' + filename);
 		}
 	} catch(e) {
 	}
@@ -133,8 +150,6 @@ this.getFileName = function(request) {
 	}
 
 	var filename = this.generateFileName(url, currentSection);
-
-	console.log(filename);
 
 	return filename;
 };

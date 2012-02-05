@@ -19,7 +19,20 @@ this.blog = {
 	}
 };
 
+this.admin = {
+	index: function() {
+		return {
+			title: 'blog.tomasperez.com',
+			static_domain: ServerCore.staticDomain(),
+			api_url: ServerCore.apiDomain(),
+			domain: 'tomasperez.com',
+			description: 'Admin panel'
+		}
+	}
+};
+
 this.actions = {
-	'blog.index': this.blog.index
+	'blog.index': this.blog.index,
+	'admin.index': this.admin.index
 };
 

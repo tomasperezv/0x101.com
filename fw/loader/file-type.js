@@ -47,7 +47,7 @@ function FileTypeJavascript(url) {
 		src: url
 	};
 
-	this.headers = {"Content-Type": "application/javascript"};
+	this.header = {"Content-Type": "application/x-javascript"};
 }
 
 FileTypeJavascript.prototype = new FileType();
