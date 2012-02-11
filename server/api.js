@@ -87,7 +87,7 @@ this.servePrivate = function(request) {
 };
 
 this.responseCallback = function(data) {
-	responseA.writeHead(200, 'Content-type: application/json');
+	responseA.writeHead(200, {'Access-Control-Allow-Origin': '*', 'Content-type': 'application/json'});
 	responseA.write( JSON.stringify(data) );
 
 	responseA.end();
@@ -149,6 +149,7 @@ this.login = function(request) {
 	request.on('end', function () {
 		var data = qs.parse(body);
 		var user = new User();
+		console.log(data);
 		user.validate(data.login, data.password, function(user) {
 
 			if (typeof user.id !== 'undefined') {
