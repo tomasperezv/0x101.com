@@ -2,7 +2,7 @@ About
 =============
 Web application for serving my personal webpage. Implemented in Node.js and hosted in a Joyent Cloud Node Smartmachine.
 
-The application implement the logic and files for the following hosts:
+Hosts served by this app:
 -------
 
 * [Personal webpage](http://www.0x101.com)
