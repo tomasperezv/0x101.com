@@ -15,6 +15,8 @@ var fs = require('fs'),
 	TemplateEngine = require('./template-engine.js'),
 	Router = require('./router.js');
 
+this.staticCache = [];
+
 this.constants = Config.get('server');
 this.allowedExtensions = Config.get('allowed-extensions'); 
 this.api = Config.get('api');
@@ -94,49 +96,58 @@ this.serve = function(fileName, response) {
 
 	var ServerCore = this;
 
-	path.exists(fileName, function(exists) {
+	if (typeof this.staticCache[fileName] !== 'undefined') {
+		console.log('reading from cache ' + fileName);
+		this.writeHeader(response, fileName);
+		response.write(this.staticCache[fileName], "binary");
+		response.end();
+	} else {
 
-		if(!exists) {
-			ServerCore.writeError(response, ServerCore.constants.notFound);
-			response.end();
-			return;
-		}
-		
-		fs.readFile(fileName, "binary", function(err, file) {
+		path.exists(fileName, function(exists) {
 	
-			if(err) {
-	
-				ServerCore.writeError(response, ServerCore.constants.serverError, err);
-	
-			} else if ( ServerCore.canServe(fileName) ) {
-
-				try {
-
-					console.log('Routing request for ' + fileName);
-
-					ServerCore.writeHeader(response, fileName);
-
-					response.write(file, "binary");
-
-				} catch (Error) {
-
-					console.log('Error serving ' + fileName);
-
-					ServerCore.writeHeader(response, ServerCore.constants.defaultDocument);
-
-					response.write(file, "binary");
-
-				}
-	
-			} else {
-				console.log('Trying to access to forbidden extension: ' + fileName);
-				ServerCore.writeError(response, ServerCore.constants.forbidden);
+			if(!exists) {
+				ServerCore.writeError(response, ServerCore.constants.notFound);
+				response.end();
+				return;
 			}
+				
+			fs.readFile(fileName, "binary", function(err, file) {
+		
+				if(err) {
+		
+					ServerCore.writeError(response, ServerCore.constants.serverError, err);
+		
+				} else if ( ServerCore.canServe(fileName) ) {
 	
-			response.end();
+					try {
 	
+						console.log('Routing request for ' + fileName);
+	
+						ServerCore.writeHeader(response, fileName);
+	
+						response.write(file, "binary");
+						ServerCore.staticCache[fileName] = file;
+	
+					} catch (Error) {
+	
+						console.log('Error serving ' + fileName);
+	
+						ServerCore.writeHeader(response, ServerCore.constants.defaultDocument);
+	
+						response.write(file, "binary");
+	
+					}
+		
+				} else {
+					console.log('Trying to access to forbidden extension: ' + fileName);
+					ServerCore.writeError(response, ServerCore.constants.forbidden);
+				}
+		
+				response.end();
+		
+			});
 		});
-	});
+	}
 
 };
 
