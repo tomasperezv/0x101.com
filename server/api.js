@@ -8,6 +8,8 @@ var Post = require('./model/post').Post,
 	Salt = require('./model/salt').Salt,
 	Session = require('./model/session').Session,
 	Router = require('./router.js'),
+	Handlebars = require('handlebars'),
+	fs = require('fs'),
 	qs = require('querystring');
 
 responseA = null;
@@ -98,11 +100,28 @@ this.responseCallback = function(data) {
 
 this.getPosts = function() {
 
-	var api = this;
+	var api = this,
+	templateName = './blog/templates/posts.mustache';
 
 	var posts = new Post();
 	posts.load({}, function(model) {
-		api.responseCallback(model.data);
+
+		fs.readFile(templateName, "binary", function(err, template) {
+			if (err) {
+				console.log('Template not found');
+				api.responseCallback({});
+			} else {
+				console.log('serving template ' + templateName);
+
+				var template = Handlebars.compile(template);
+				var output = template({post: model.data});
+
+				responseA.writeHead(200, {'Access-Control-Allow-Origin': '*', 'Content-type': 'text/html'});
+				responseA.write(output, "binary");
+				responseA.end();
+			}
+		});
+
 	});
 
 };
