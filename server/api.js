@@ -21,16 +21,20 @@ this.getDefaultData = function() {
 
 this.serve = function(request, response) {
 
-	var apiMethod = request.url.substring(1);
 	responseA = response;
 
-	var data = this.getDefaultData();
+	var apiMethod = request.url.substring(1),
+	data = this.getDefaultData(),
+	self = this;
 
 	// TODO: Find a better way to redirect api calls to methods
 	switch (apiMethod) {
 
 		case 'getPosts':
-			this.getPosts();
+			this.servePrivate(request, function(data) {
+				self.getPosts(data);
+			});
+
 			break;
 
 		case 'addUser':
@@ -42,7 +46,6 @@ this.serve = function(request, response) {
 			break;
 		
 		case 'addPost':
-			var self = this;
 			this.servePrivate(request, function(data) {
 				self.addPost(data);
 			});
@@ -56,7 +59,7 @@ this.serve = function(request, response) {
 
 };
 
-this.servePrivate = function(request) {
+this.servePrivate = function(request, callback) {
 
 	var api = this;
 
@@ -75,7 +78,7 @@ this.servePrivate = function(request) {
 			var session = new Session();
 			session.check(user.id, data.session, function(sessionData) {
 				if (typeof sessionData.id !== 'undefined') {
-					api.responseCallback(data);
+					callback(data);
 				} else {
 					api.responseCallback({});
 				}
@@ -99,6 +102,7 @@ this.getPosts = function() {
 
 	var posts = new Post();
 	posts.load({}, function(model) {
+		console.log(model);
 		api.responseCallback(model.data);
 	});
 
@@ -156,6 +160,8 @@ this.login = function(request) {
 
 				var session = new Session();
 				session.createAndLoad({user_id: user.id, challenge: session.getRandomString(), creation_date: session.getTimestamp()}, function(session) {
+					// Add the username to the session info
+					session.login = data.login;
 					api.responseCallback(session);
 				});
 
