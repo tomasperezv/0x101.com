@@ -102,7 +102,6 @@ this.getPosts = function() {
 
 	var posts = new Post();
 	posts.load({}, function(model) {
-		console.log(model);
 		api.responseCallback(model.data);
 	});
 
@@ -151,9 +150,9 @@ this.login = function(request) {
 	});
 
 	request.on('end', function () {
-		var data = qs.parse(body);
-		var user = new User();
-		console.log(data);
+		var data = qs.parse(body),
+		user = new User();
+
 		user.validate(data.login, data.password, function(user) {
 
 			if (typeof user.id !== 'undefined') {
