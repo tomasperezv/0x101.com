@@ -70,25 +70,41 @@ this.serveTemplate = function(fileName, config, response) {
 	var templateName = config['folder'] + config['templates'][0];
 	console.log(templateName);
 
-	fs.readFile(templateName, "binary", function(err, template) {
-		if (err) {
-			console.log('Template not found');
-		} else {
-			console.log('serving template ' + templateName);
+	if (this.constants.staticCache && typeof this.staticCache[templateName] !== 'undefined') {
 
-			// Get template data
-			var data = TemplateEngine.processData(config);
+		console.log('reading template from cache ' + templateName);
+		this.writeHeader(response, templateName);
+		var template = Handlebars.compile(this.staticCache[templateName]);
 
-			ServerCore.writeHeader(response, fileName);
+		// Get template data
+		var data = TemplateEngine.processData(config);
+		var output = template(data);
+		response.write(output, "binary");
+		response.end();
 
-			var template = Handlebars.compile(template);
-			var output = template(data);
+	} else {
+		fs.readFile(templateName, "binary", function(err, template) {
+			if (err) {
+				console.log('Template not found');
+			} else {
+				console.log('serving template ' + templateName);
 
-			response.write(output, "binary");
-
-			response.end();
-		}
-	});
+				ServerCore.staticCache[templateName] = template;
+	
+				// Get template data
+				var data = TemplateEngine.processData(config);
+	
+				ServerCore.writeHeader(response, templateName);
+	
+				var template = Handlebars.compile(template);
+				var output = template(data);
+	
+				response.write(output, "binary");
+	
+				response.end();
+			}
+		});
+	}
 
 };
 
@@ -96,7 +112,7 @@ this.serve = function(fileName, response) {
 
 	var ServerCore = this;
 
-	if (typeof this.staticCache[fileName] !== 'undefined') {
+	if (this.constants.staticCache && typeof this.staticCache[fileName] !== 'undefined') {
 		console.log('reading from cache ' + fileName);
 		this.writeHeader(response, fileName);
 		response.write(this.staticCache[fileName], "binary");
