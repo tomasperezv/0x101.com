@@ -132,11 +132,9 @@ this.addPost = function(data) {
 
 	if (typeof data.content !== 'undefined') {
 		var posts = new Post();
-		posts.create({content: data.content}, function(postId)	{
-			if (typeof callback !== 'undefined') {
-				console.log('created post ' + postId);
-				api.responseCallback({post: postId, date: posts.getTimestamp()});
-			}
+		posts.create({content: data.content, date: posts.getTimestamp()}, function(postId)	{
+			console.log('created post ' + postId);
+			api.responseCallback({id: postId});
 		});
 	}
 

@@ -7,6 +7,7 @@ create table posts(
 
 create index date on posts (date);
 
+drop table if exists users;
 create table users(
 	id INTEGER PRIMARY KEY,
 	login string,
@@ -15,6 +16,7 @@ create table users(
 	permissions int
 );
 
+drop table if exists salts;
 create table salts(
 	id INTEGER PRIMARY KEY,
 	user_id int not null,   
@@ -23,6 +25,7 @@ create table salts(
 
 create index user_id on salts (user_id);
 
+drop table if exists sessions;
 create table sessions(
 	id INTEGER PRIMARY KEY,
 	user_id int not null,   
@@ -30,5 +33,5 @@ create table sessions(
 	challenge string
 );
 
-create index user_id on sessions (user_id);
+create index sessions_user_id on sessions (user_id);
 create index creation_date on sessions (creation_date);
