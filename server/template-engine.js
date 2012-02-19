@@ -4,30 +4,38 @@
   */
 
 ServerCore = require("./server-core.js"),
+Post = require('./model/post').Post;
 
-this.processData = function(config) {
-	return this.actions[config.action]();
+this.processData = function(config, callback) {
+	return this.actions[config.action](callback);
 };
 
 this.blog = {
-	index: function() {
-		return {
-			title: 'blog.tomasperez.com',
-			static_domain: ServerCore.staticDomain(),
-			description: 'my personal blog'			
-		}
+	index: function(callback) {
+
+		var post = new Post();
+		post.load({}, function(model) {
+			var firstPost = model.data[0].content;
+			callback({
+				title: 'blog.tomasperez.com',
+				static_domain: ServerCore.staticDomain(),
+				description: 'my personal blog',
+				firstPost: firstPost
+			});
+		});
+
 	}
 };
 
 this.admin = {
-	index: function() {
-		return {
+	index: function(callback) {
+		callback({
 			title: 'blog.tomasperez.com',
 			static_domain: ServerCore.staticDomain(),
 			api_url: ServerCore.apiDomain(),
 			domain: 'tomasperez.com',
 			description: 'Admin panel'
-		}
+		});
 	}
 };
 

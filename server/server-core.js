@@ -92,16 +92,16 @@ this.serveTemplate = function(fileName, config, response) {
 				ServerCore.staticCache[templateName] = template;
 	
 				// Get template data
-				var data = TemplateEngine.processData(config);
-	
-				ServerCore.writeHeader(response, templateName);
-	
-				var template = Handlebars.compile(template);
-				var output = template(data);
-	
-				response.write(output, "binary");
-	
-				response.end();
+				TemplateEngine.processData(config, function(data) {
+					ServerCore.writeHeader(response, templateName);
+		
+					var template = Handlebars.compile(ServerCore.staticCache[templateName]);
+					var output = template(data);
+		
+					response.write(output, "binary");
+		
+					response.end();
+				});
 			}
 		});
 	}
