@@ -52,6 +52,21 @@ this.serve = function(request, response) {
 				self.addPost(data);
 			});
 			break;
+
+		case 'updatePost':
+			this.servePrivate(request, function(data) {
+				self.updatePost(data);
+			});
+
+			break;
+
+		case 'removePost':
+			this.servePrivate(request, function(data) {
+				self.removePost(data);
+			});
+
+			break;
+			
 		
 		default:
 			this.responseCallback({'status': 'active'});
@@ -59,6 +74,12 @@ this.serve = function(request, response) {
 			break
 	}
 
+};
+
+this.removeSessionParams = function(params) {
+	delete params.login;
+	delete params.session;
+	return params;
 };
 
 this.servePrivate = function(request, callback) {
@@ -80,6 +101,7 @@ this.servePrivate = function(request, callback) {
 			var session = new Session();
 			session.check(user.id, data.session, function(sessionData) {
 				if (typeof sessionData.id !== 'undefined') {
+					data = api.removeSessionParams(data);
 					callback(data);
 				} else {
 					api.responseCallback({});
@@ -134,6 +156,39 @@ this.addPost = function(data) {
 		var posts = new Post();
 		posts.create({content: data.content, date: posts.getTimestamp()}, function(postId)	{
 			console.log('created post ' + postId);
+			api.responseCallback({id: postId});
+		});
+	}
+
+};
+
+this.updatePost = function(data) {
+
+	var api = this;
+
+	if (typeof data.content !== 'undefined') {
+
+		var post = new Post();
+
+		if (typeof data.date === 'undefined') {
+			// Update the timestamp automatically
+			data.date = post.getTimestamp();
+		}
+
+		post.update(data, function(postContent)	{
+			api.responseCallback(postContent);
+		});
+	}
+
+};
+
+this.removePost = function(data) {
+
+	var api = this;
+
+	if (typeof data.content !== 'undefined') {
+		var post = new Post();
+		post.remove(data, function(postId)	{
 			api.responseCallback({id: postId});
 		});
 	}

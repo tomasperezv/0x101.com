@@ -117,6 +117,27 @@ DataBaseModel.prototype.create = function(data, onSuccess) {
 	});
 };
 
+DataBaseModel.prototype.update = function(data, onSuccess) {
+
+	this.lastQuery = this.getUpdateQuery(data);
+	console.log(this.lastQuery);
+
+	var sqliteConnection = new SQLiteConnection.SQLiteConnection(); 
+	sqliteConnection.insert(this.lastQuery, function() {
+		onSuccess(data);
+	});
+};
+
+DataBaseModel.prototype.remove = function(data, onSuccess) {
+	this.lastQuery = this.getRemoveQuery(data);
+	console.log(this.lastQuery);
+
+	var sqliteConnection = new SQLiteConnection.SQLiteConnection(); 
+	sqliteConnection.select(this.lastQuery, function() {
+		onSuccess(data.id);
+	});
+};
+
 /**
  * Builds an insert query.
  *
@@ -165,6 +186,44 @@ DataBaseModel.prototype.getInsertQuery = function(data) {
 	}
 	
 	query += ');';
+
+	return query;	
+};
+
+DataBaseModel.prototype.getRemoveQuery = function(data) {
+	return query = 'DELETE FROM ' + this.table + ' WHERE id = ' + data.id;
+};
+
+DataBaseModel.prototype.getUpdateQuery = function(data) {
+
+	var numFields = Object.keys(data).length;
+
+	var query = 'UPDATE ' + this.table;
+
+	query += ' SET ';
+	var currentPosition = 0;
+	for (fieldName in data) {
+
+		var value = data[fieldName];
+
+		query += fieldName + ' = ';
+
+		if (typeof value === 'string') {
+			query += '"' + value + '"';
+		} else {
+			query += value;
+		}
+
+		currentPosition++;
+
+		if (currentPosition < numFields) {
+			query += ',';
+		}
+	}
+
+	query += ' WHERE id = ' + data.id;
+
+	query += ';';
 
 	return query;	
 };
@@ -230,14 +289,8 @@ DataBaseModel.prototype.getRandomString = function() {
 	return salt;
 };
 
-DataBaseModel.prototype.getTimestamp = function(date) {
-
-	if (typeof date === 'undefined') {
-		var currentTime = new Date();
-		var date = new Date(currentTime.getFullYear() + '-' + (currentTime.getMonth()+1) + '-' + currentTime.getDate());
-	}   
-
-	return Math.round((new Date(date)).getTime() / 1000);
+DataBaseModel.prototype.getTimestamp = function() {
+	return Math.round((new Date()).getTime() / 1000);
 };
 
 exports.DataBaseModel = DataBaseModel;
