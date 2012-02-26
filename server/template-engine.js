@@ -19,7 +19,7 @@ this.blog = {
 			callback({
 				title: 'blog.tomasperez.com',
 				static_domain: ServerCore.staticDomain(),
-				description: 'my personal blog',
+				description: 'My personal blog',
 				firstPost: firstPost
 			});
 		});
